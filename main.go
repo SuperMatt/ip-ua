@@ -55,6 +55,7 @@ func main() {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 
+		o = fmt.Sprintf("%s\n", o)
 		fmt.Fprintf(w, o)
 
 	})
