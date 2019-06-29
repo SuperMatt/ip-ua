@@ -15,6 +15,7 @@ func main() {
 	ipURL := fset.String("ip", "localhost:8088/ip", "URL for IP reporter")
 	uaURL := fset.String("ua", "localhost:8088/ua", "URL for User Agent String reporter")
 	port := fset.Int("port", 8088, "listen port")
+	debug := fset.Bool("debug", false, "Debugging messages to stdout")
 
 	fset.Parse(os.Args[1:])
 
@@ -27,16 +28,29 @@ func main() {
 		var o string
 
 		if fullURL == *ipURL {
+			if *debug {
+				fmt.Println("Matched address:", *ipURL)
+			}
 			a := r.RemoteAddr
 			i, _, err := net.SplitHostPort(a)
 			if err != nil {
 				o = "error"
 				w.WriteHeader(http.StatusInternalServerError)
 			}
+			x, ok := r.Header["X-Forwarded-For"]
+			if ok {
+				i = x[0]
+			}
 			o = i
 		} else if fullURL == *uaURL {
+			if *debug {
+				fmt.Println("Matched address:", *uaURL)
+			}
 			o = r.UserAgent()
 		} else {
+			if *debug {
+				fmt.Println("Could not match", fullURL, "to either", *ipURL, "or", *uaURL)
+			}
 			o = "error"
 			w.WriteHeader(http.StatusBadRequest)
 		}
