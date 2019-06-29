@@ -1,0 +1,6 @@
+[Unit]
+Requires=multi-user.target
+
+[Service]
+ExecStart=/path/to/Service
+Restart=always
